@@ -47,9 +47,7 @@ class InputLayer:
 		j = 0
 		for n in self.neurons:
 			inputval = self.input_values[i][j]
-			print(i)
-			print(j)
-			
+			print(inputval)
 			j +=1
 			if(j==28):
 				j = 0;
