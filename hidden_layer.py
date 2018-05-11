@@ -15,9 +15,8 @@ class HiddenLayer:
 
 	def createNeurons(self):
 		for i in range(self.number_of_neurons):
-			bias = -1
-			w = random.uniform(0, 1)
-			newNeuron = Neuron(self.input_values, w, bias)
+			w = [random.uniform(0, 1) for x in self.input_values]
+			newNeuron = Neuron(self.input_values, w)
 			self.neurons.append(newNeuron)
 
 	def calcOutputs(self):

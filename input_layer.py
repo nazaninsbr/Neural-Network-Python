@@ -3,6 +3,7 @@ import random
 
 class InputLayer:
 	def __init__(self, input_values):
+		self.number_of_pixels = 28
 		self.input_values = input_values
 		self.neurons = []
 		self.outputValues = []
@@ -13,11 +14,11 @@ class InputLayer:
 		self.calcOutputs()
 
 	def createNeurons(self):
-		for i in range(len(self.input_values)):
-			for j in range(len(self.input_values[0])):
-				bias = -1
-				w = random.uniform(0, 1)
-				newNeuron = Neuron(self.input_values[i][j], w, bias)
+		for i in range(self.number_of_pixels):
+			for j in range(self.number_of_pixels):
+				inputs = [x[i][j] for x in self.input_values]
+				w = [random.uniform(0, 1) for x in inputs]
+				newNeuron = Neuron(inputs, w)
 				self.neurons.append(newNeuron)
 
 	def calcOutputs(self):

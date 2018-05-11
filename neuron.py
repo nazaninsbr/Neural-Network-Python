@@ -1,23 +1,18 @@
 from activationFunctions import *
+import numpy as np
 
 class Neuron:
-	def __init__(self, pixel_value, weight, bias):
-		self.pixel_value = pixel_value
-		self.weight = weight
-		self.bias = bias
+	def __init__(self, pixel_values, weights):
+		self.pixel_values = np.asarray(pixel_values)
+		self.weights = np.asarray(weights)
 		self.sigma = 0
 		self.output = 0
 
 	def calc_sigma(self):
-		if str(type(self.pixel_value))=="<class 'numpy.float32'>":
-			self.sigma += self.weight*self.pixel_value
-		else:
-			for pixel in self.pixel_value:
-				self.sigma += self.weight*pixel
-
+		self.sigma = np.dot(self.pixel_values, self.weights)
 
 	def calc_activation(self):
-		self.output = linear1(self.sigma)
+		self.output = sigmoid(self.sigma)
 
 
 	def calc_output(self):

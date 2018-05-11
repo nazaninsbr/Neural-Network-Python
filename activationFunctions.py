@@ -21,3 +21,11 @@ def reloFunction(inputValue):
 	if inputValue < 0:
 		return 0
 	return inputValue
+
+
+def sigmoidDeriv(inputValue):
+	return inputValue*(1-inputValue)
+
+
+def linearDeriv(inputValue):
+	return LINEAR_A

@@ -3,6 +3,8 @@ from hidden_layer import *
 from output_layer import *
 import math
 
+HIDDEN_LAYER = 2*int(math.sqrt(28*28))
+
 class NeuralNetwork:
 	def __init__(self, input_values):
 		self.nn_inputs = input_values
@@ -11,29 +13,52 @@ class NeuralNetwork:
 		self.outlay = ''
 		self.inlay = ''
 		self.hidlay = ''
+		self.output_layer_output = []
+		self.hidden_layer_outputs = []
+		self.input_layer_outputs = []
+		self.expected = []
 		self.work()
 
 	def work(self):
+		self.calcExpected()
 		self.createNetwork()
 		self.trainNetwork()
-		self.calcOutput(self.maxIndex)
+		# self.calcOutput(self.maxIndex)
 
 	def createNetwork(self):
-		self.inlay = InputLayer(self.nn_inputs)
-		input_layer_outputs = self.inlay.getOutput()
-		self.hidlay = HiddenLayer(int(math.sqrt(len(input_layer_outputs))), input_layer_outputs)
-		hidden_layer_outputs = self.hidlay.getOutput()
+		print("Creating the newtork")
+		inlay_inputs = [x[1] for x in self.nn_inputs]
+		# print(len(inlay_inputs))
+		self.inlay = InputLayer(inlay_inputs)
+		self.input_layer_outputs = self.inlay.getOutput()
+		self.hidlay = HiddenLayer(HIDDEN_LAYER, input_layer_outputs)
+		self.hidden_layer_outputs = self.hidlay.getOutput()
 		self.outlay = OutputLayer(10, hidden_layer_outputs)
-		output_layer_output = self.outlay.getOutput()
-		self.maxIndex = self.calcMaxIndex(output_layer_output)
+		self.output_layer_output = self.outlay.getOutput()
+		print(self.output_layer_output)
+		print(self.output_layer_output[0])
 
+	def calcExpected(self):
+		print("Calculation Expected Outputs")
+		for value in self.nn_inputs:
+			self.expected.append(value[0])
 
-	def moreThanOneAboveHalf(self, li):
-		ans = [x for x in li if x > 0.5]
-		if len(ans) > 1:
-			return True
-		return False
+		# print(self.expected)
 
+	def calcError(self):
+		real = []
+		e = 0
+
+		for value in self.output_layer_output:
+			ind = calcMaxIndex(value)
+			out = calcOutput(value)
+			real.append(out)
+
+		error = self.expected - real
+		for value in error:
+			e += int(value)
+
+		return (error, e)
 
 	def calcMaxIndex(self, li):
 		return li.index(max(li))
@@ -44,10 +69,11 @@ class NeuralNetwork:
 
 
 	def trainNetwork(self):
-		while(self.moreThanOneAboveHalf(self.outlay.getOutput())):
-			pass
+		num = 100
+		while(num > 20):
+			l2_error , num = self.calcError()
+			# l2_delta = l2_error*sigmoidDeriv()
 
-		self.calcOutput()
 
 
 	def getOutput(self):
