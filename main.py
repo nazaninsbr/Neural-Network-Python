@@ -9,17 +9,8 @@ def getImageFileNames(dir_name):
 	allImageFiles = getAllImageFileNamesInThisDir(dir_name)
 	return (allImageFiles, dir_name)
 
-def whatLetterIsIt(dirPath):
-	allImageFiles, dir_name = getImageFileNames(dirPath)
-	print("Working on: "+dirPath)
-	for imageFile in allImageFiles:
-		path = dir_name +"/"+ imageFile
-		img = readImageFile(path)
-		if(img==[]):
-			print("<---- "+imageFile+" was read as an empty file ---->")
-			continue
-		nn = NeuralNetwork(img)
-		# print("Image Name: " +imageFile+ " is "+nn.getOutput())
+def whatLetterIsIt(everySingleImage):
+	nn = NeuralNetwork(everySingleImage)
 
 def getAllPaths():
 	allPaths = []
@@ -29,8 +20,26 @@ def getAllPaths():
 		allPaths.append(line)
 	return allPaths
 
+def getAllImages(allPaths):
+	allImages = []
+	images = []
+	for path in allPaths:
+		images , _ = getImageFileNames(path)
+		# print(images)
+		for imageFile in images:
+			imgPath = path +"/"+ imageFile
+			imgContent = readImageFile(imgPath)
+			if not imgContent==[]:
+				# print(path[-1])
+				allImages.append((path[-1], imgContent))
+	return allImages
+
 if __name__ == '__main__':
+	print("Getting path names")
 	allPaths = getAllPaths()
-	for dirPath in allPaths:
-		whatLetterIsIt(dirPath)
+	print("Getting all image files")
+	everySingleImage = getAllImages(allPaths)
+	print("Number of images: {}".format(len(everySingleImage)))
+	# print(everySingleImage[0])
+	whatLetterIsIt(everySingleImage)
 	
