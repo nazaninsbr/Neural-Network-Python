@@ -1,5 +1,6 @@
 from neuron import *
 import random 
+from activationFunctions import *
 
 class HiddenLayer:
 	def __init__(self, number_of_neurons, input_values):
@@ -25,3 +26,13 @@ class HiddenLayer:
 
 	def getOutput(self):
 		return self.outputValues
+
+
+	def setNewInput(self, newInput):
+		self.input_values = newInput
+		for n in self.neurons:
+			n.setNewInput(self.input_values)
+
+
+		return self.calcOutputs()
+

@@ -9,6 +9,9 @@ class Neuron:
 		self.output = 0
 
 	def calc_sigma(self):
+		# print(self.pixel_values)
+		# print(self.weights)
+		# print(type(self.pixel_values))
 		self.sigma = np.dot(self.pixel_values, self.weights)
 
 	def calc_activation(self):
@@ -19,3 +22,9 @@ class Neuron:
 		self.calc_sigma()
 		self.calc_activation()
 		return self.output
+
+	def setNewInput(self, newInput):
+		self.pixel_values = np.asarray(newInput)
+
+	def getWeights(self):
+		return self.weights

@@ -25,3 +25,17 @@ class OutputLayer:
 
 	def getOutput(self):
 		return self.outputValues
+
+	def setNewInput(newInput):
+		self.input_values = newInput
+		for n in self.neurons:
+			n.setNewInput(self.input_values)
+
+
+		return self.calcOutputs()
+
+	def getWeights(self):
+		li = []
+		for n in self.neurons:
+			li.extend(n.getWeights())
+		return li
