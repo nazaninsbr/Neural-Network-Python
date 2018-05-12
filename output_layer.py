@@ -32,7 +32,8 @@ class OutputLayer:
 			n.setNewInput(self.input_values)
 
 
-		return self.calcOutputs()
+		self.calcOutputs()
+		return self.getOutput()
 
 	def getWeights(self):
 		li = []

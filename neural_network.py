@@ -5,6 +5,7 @@ import math
 from activationFunctions import *
 
 HIDDEN_LAYER = 2*int(math.sqrt(28*28))
+ROUND = 4
 
 class NeuralNetwork:
 	def __init__(self, input_values):
@@ -23,7 +24,7 @@ class NeuralNetwork:
 	def work(self):
 		choice = input("User GD or SGD? (1/2)");
 		if choice=='1':
-			self.calcExpected()
+			#self.calcExpected()
 			self.createNetwork()
 			self.trainNetwork()
 			# self.calcOutput(self.maxIndex)
@@ -59,7 +60,7 @@ class NeuralNetwork:
 			out = calcOutput(value)
 			real.append(out)
 
-		error = ord(self.expected) - ord(real)
+		error =  (self.expected) - ord(real)
 		for value in error:
 			e += int(value)
 
@@ -87,37 +88,45 @@ class NeuralNetwork:
 		return self.output
 
 
-	def sgdTrain(self, expected, value):
+	def sgdTrain(self):
 		print("In training")
-		error = self.sgdCalcError(expected, value)
-		r = 0
-		while(r<4):
-			k = 0
-			r +=1 
-			if(r==1):
-				c = 0
-			elif(r==2):
-				c = 1
-			elif(r==3):
-				c = 2
+		#print (expected , value)
+		#error = self.sgdCalcError(expected, value)
+		turn  = 0
+		while(turn<ROUND):
+			coef = 0
+			turn +=1 
+			if(turn==1):
+				remainder = 0
+			elif(turn==2):
+				remainder = 1
+			elif(turn==3):
+				remainder = 2
 			imageInd = 0
+			#print("len of nn_inputs: " , len(self.nn_inputs))
 			while(imageInd < len(self.nn_inputs)):
-				imageInd = 3*k + c
+				imageInd = 3*coef + remainder
+				#print("this is imageInd: ",imageInd)
+				#print("imageInd: ",self.nn_inputs[imageInd][1])
 				self.input_layer_outputs = self.inlay.setNewInput(self.nn_inputs[imageInd][1])
+				#print ("out input layer: ",self.input_layer_outputs)
+				print("hello sabri:)")
 				self.hidden_layer_outputs = self.hidlay.setNewInput(self.input_layer_outputs)
+				#print ("out hidden layer: " , self.hidden_layer_outputs)
 				self.output_layer_output = self.outlay.setNewInput(self.hidden_layer_outputs)
 				print("Expected : {}".format(self.nn_inputs[imageInd][0]))
 				print("Got : "+self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 
 				l2_error = self.sgdCalcError(self.nn_inputs[imageInd][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-				l2_delta = l2_error*sigmoidDeriv(self.output_layer_output[self.calcMaxIndex(self.output_layer_output)])
-				syn1 = self.out.getWeights()
+				l2_delta = l2_error*sigmoidDeriv(ord(self.output_layer_output[self.calcMaxIndex(self.output_layer_output)]))
+				syn1 = self.outlay.getWeights()
 				l1_error = l2_delta.dot(syn1.T)
+				print("syn1.T is: " , syn1.T)
 				print(syn1)
 				print(l2_error)
 				print(l2_delta)
 
-				k +=1
+				coef +=1
 
 
 
@@ -131,13 +140,23 @@ class NeuralNetwork:
 
 	def sgdCreateNetworkAndTrain(self):
 		inlay_inputs = self.nn_inputs[0][1]
+		#print("this is inlay input in sgdCreateNetworkAndTrain",inlay_inputs)
 		self.inlay = InputLayer(inlay_inputs, 2)
+		#print("self inlay in sgdCreateNetworkAndTrain" , self.inlay)
 		self.input_layer_outputs = self.inlay.getOutput()
+		#print("input layer out  in sgdCreateNetworkAndTrain: " , self.input_layer_outputs)
 		self.hidlay = HiddenLayer(HIDDEN_LAYER, self.input_layer_outputs)
+		#print("hidden layer out  in sgdCreateNetworkAndTrain: " , self.hidlay)
 		self.hidden_layer_outputs = self.hidlay.getOutput()
+		#print("HIDDEN layer out  in sgdCreateNetworkAndTrain: " , self.hidden_layer_outputs)
 		self.outlay = OutputLayer(10, self.hidden_layer_outputs)
 		self.output_layer_output = self.outlay.getOutput()
-		self.sgdTrain(self.nn_inputs[0][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
+		#print("output layer out  in sgdCreateNetworkAndTrain: " , self.output_layer_output)
+		#print("max index in out of output layer: " , self.calcMaxIndex(self.output_layer_output))
+		#print("3 index in out layer: " , self.output_layer_output[3])
+		#print("self.nn_inputs[0][0]: " , self.nn_inputs[0][0])
+		#print("out of calcOutput: ",self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
+		self.sgdTrain()
 
 		
 

@@ -19,6 +19,7 @@ class HiddenLayer:
 			w = [random.uniform(0, 1) for x in self.input_values]
 			newNeuron = Neuron(self.input_values, w)
 			self.neurons.append(newNeuron)
+			del w[:]
 
 	def calcOutputs(self):
 		for n in self.neurons:
@@ -34,5 +35,6 @@ class HiddenLayer:
 			n.setNewInput(self.input_values)
 
 
-		return self.calcOutputs()
+		self.calcOutputs()
+		return self.getOutput()
 

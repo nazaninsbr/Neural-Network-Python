@@ -11,6 +11,7 @@ def getImageFileNames(dir_name):
 
 def whatLetterIsIt(everySingleImage):
 	nn = NeuralNetwork(everySingleImage)
+	#nn.get_output() TODO: print the result.
 
 def getAllPaths():
 	allPaths = []

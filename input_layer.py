@@ -42,18 +42,21 @@ class InputLayer:
 		return self.outputValues
 
 	def setNewInput(self, newInput):
+		#print ("newInput in input layer: " , newInput)
 		self.input_values = newInput
 		i = 0
 		j = 0
 		for n in self.neurons:
 			inputval = self.input_values[i][j]
-			print(inputval)
+			#print("say I'm i: ",i)
+			#print("say I'm j: ",j)
 			j +=1
 			if(j==28):
 				j = 0;
 				i = (i + 1)%28
-			
+			#print ("inputval in input layer : " , inputval)
 			n.setNewInput(inputval)
-
-		return self.calcOutputs()
+			#print("inputval in input layer: " , inputval)
+		self.calcOutputs()
+		return self.getOutput()
 
