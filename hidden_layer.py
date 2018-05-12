@@ -22,6 +22,7 @@ class HiddenLayer:
 			del w[:]
 
 	def calcOutputs(self):
+		del self.outputValues[:]
 		for n in self.neurons:
 			self.outputValues.append(n.calc_output())
 
@@ -30,6 +31,7 @@ class HiddenLayer:
 
 
 	def setNewInput(self, newInput):
+		#print("len of newInput in hiddenLayer",len(newInput))
 		self.input_values = newInput
 		for n in self.neurons:
 			n.setNewInput(self.input_values)
