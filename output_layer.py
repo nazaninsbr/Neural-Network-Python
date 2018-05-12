@@ -1,5 +1,6 @@
 from neuron import *
 import random 
+import numpy as np
 
 class OutputLayer:
 	def __init__(self, number_of_neurons, input_values):
@@ -26,7 +27,7 @@ class OutputLayer:
 	def getOutput(self):
 		return self.outputValues
 
-	def setNewInput(newInput):
+	def setNewInput(self,newInput):
 		self.input_values = newInput
 		for n in self.neurons:
 			n.setNewInput(self.input_values)
@@ -39,4 +40,4 @@ class OutputLayer:
 		li = []
 		for n in self.neurons:
 			li.extend(n.getWeights())
-		return li
+		return np.asarray(li)

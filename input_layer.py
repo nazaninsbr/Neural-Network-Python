@@ -35,6 +35,7 @@ class InputLayer:
 
 
 	def calcOutputs(self):
+		del self.outputValues[:]
 		for n in self.neurons:
 			self.outputValues.append(n.calc_output())
 
@@ -44,9 +45,11 @@ class InputLayer:
 	def setNewInput(self, newInput):
 		#print ("newInput in input layer: " , newInput)
 		self.input_values = newInput
+		#print("the len of input_values in input layer -> "  , len(self.input_values))
 		i = 0
 		j = 0
 		for n in self.neurons:
+			#print("my len is :"  , len(self.neurons))
 			inputval = self.input_values[i][j]
 			#print("say I'm i: ",i)
 			#print("say I'm j: ",j)

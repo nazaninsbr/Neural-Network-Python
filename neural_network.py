@@ -41,8 +41,8 @@ class NeuralNetwork:
 		self.hidden_layer_outputs = self.hidlay.getOutput()
 		self.outlay = OutputLayer(10, self.hidden_layer_outputs)
 		self.output_layer_output = self.outlay.getOutput()
-		print(self.output_layer_output)
-		print(self.output_layer_output[0])
+		#print(self.output_layer_output)
+		#print(self.output_layer_output[0])
 
 	def calcExpected(self):
 		print("Calculation Expected Outputs")
@@ -94,6 +94,7 @@ class NeuralNetwork:
 		#error = self.sgdCalcError(expected, value)
 		turn  = 0
 		while(turn<ROUND):
+			#print("I'm now in while(turn<ROUND) ")
 			coef = 0
 			turn +=1 
 			if(turn==1):
@@ -105,26 +106,29 @@ class NeuralNetwork:
 			imageInd = 0
 			#print("len of nn_inputs: " , len(self.nn_inputs))
 			while(imageInd < len(self.nn_inputs)):
+				#print("And Now in Second while:)")
 				imageInd = 3*coef + remainder
 				#print("this is imageInd: ",imageInd)
 				#print("imageInd: ",self.nn_inputs[imageInd][1])
 				self.input_layer_outputs = self.inlay.setNewInput(self.nn_inputs[imageInd][1])
+				#print ("this is the len of input_layer_outputs -> ",len(self.input_layer_outputs))
 				#print ("out input layer: ",self.input_layer_outputs)
-				print("hello sabri:)")
+				#print("hello sabri:)")
 				self.hidden_layer_outputs = self.hidlay.setNewInput(self.input_layer_outputs)
 				#print ("out hidden layer: " , self.hidden_layer_outputs)
 				self.output_layer_output = self.outlay.setNewInput(self.hidden_layer_outputs)
 				print("Expected : {}".format(self.nn_inputs[imageInd][0]))
 				print("Got : "+self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-
 				l2_error = self.sgdCalcError(self.nn_inputs[imageInd][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-				l2_delta = l2_error*sigmoidDeriv(ord(self.output_layer_output[self.calcMaxIndex(self.output_layer_output)]))
+				#print("output layer output -> "  , self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
+				l2_delta = l2_error*sigmoidDeriv(ord(self.calcOutput(self.calcMaxIndex(self.output_layer_output))))
 				syn1 = self.outlay.getWeights()
-				l1_error = l2_delta.dot(syn1.T)
-				print("syn1.T is: " , syn1.T)
-				print(syn1)
-				print(l2_error)
-				print(l2_delta)
+				# print("syn1.T is: " , syn1.T)
+				l1_error = np.asarray(l2_delta).dot(syn1.T)
+				
+				# print(syn1)
+				# print(l2_error)
+				# print(l2_delta)
 
 				coef +=1
 
