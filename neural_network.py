@@ -107,30 +107,45 @@ class NeuralNetwork:
 			#print("len of nn_inputs: " , len(self.nn_inputs))
 			while(imageInd < len(self.nn_inputs)):
 				#print("And Now in Second while:)")
-				imageInd = 3*coef + remainder
-				#print("this is imageInd: ",imageInd)
+				#print("this is imageInd: " , imageInd)
 				#print("imageInd: ",self.nn_inputs[imageInd][1])
+				#print("sgd size input : "  , len(self.inlay.setNewInput(self.nn_inputs[imageInd][1])))
 				self.input_layer_outputs = self.inlay.setNewInput(self.nn_inputs[imageInd][1])
+				#print("sgd size input out : "  , len(self.input_layer_outputs))
 				#print ("this is the len of input_layer_outputs -> ",len(self.input_layer_outputs))
 				#print ("out input layer: ",self.input_layer_outputs)
 				#print("hello sabri:)")
 				self.hidden_layer_outputs = self.hidlay.setNewInput(self.input_layer_outputs)
 				#print ("out hidden layer: " , self.hidden_layer_outputs)
 				self.output_layer_output = self.outlay.setNewInput(self.hidden_layer_outputs)
-				print("Expected : {}".format(self.nn_inputs[imageInd][0]))
-				print("Got : "+self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
+				#print("Expected : {}".format(self.nn_inputs[imageInd][0]))
+				#print("Got : "+self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 				l2_error = self.sgdCalcError(self.nn_inputs[imageInd][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 				#print("output layer output -> "  , self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 				l2_delta = l2_error*sigmoidDeriv(ord(self.calcOutput(self.calcMaxIndex(self.output_layer_output))))
-				syn1 = self.outlay.getWeights()
+				#TODO: Test
+				syn2 = self.outlay.getWeights()
+				syn1 = self.hidlay.getWeights()
+				syn0 = self.inlay.getWeights()
 				# print("syn1.T is: " , syn1.T)
-				l1_error = np.asarray(l2_delta).dot(syn1.T)
-				
+
+				l1 = ord(self.calcOutput(self.calcMaxIndex(self.hidden_layer_outputs)))
+				l0 = ord(self.calcOutput(self.calcMaxIndex(self.input_layer_outputs)))
+				l1_error = np.asarray(l2_delta).dot(syn2.T)
+				l1_delta = l1_error*sigmoidDeriv(l1)
+				# print(l1.T)
+				syn2 += l1.T.dot(np.asarray(l2_delta))
+				syn0 += l0.T.dot(np.asarray(l1_delta))
+
 				# print(syn1)
+				# print(syn2)
 				# print(l2_error)
 				# print(l2_delta)
+				# print(l1_error)
+				# print(l1_delta)
 
 				coef +=1
+				imageInd = 3*coef + remainder
 
 
 
@@ -147,7 +162,9 @@ class NeuralNetwork:
 		#print("this is inlay input in sgdCreateNetworkAndTrain",inlay_inputs)
 		self.inlay = InputLayer(inlay_inputs, 2)
 		#print("self inlay in sgdCreateNetworkAndTrain" , self.inlay)
+		#print("size inlay_inputs: ",len(self.inlay.getOutput()))
 		self.input_layer_outputs = self.inlay.getOutput()
+		#print("size input_layer_outputs: ",len(self.input_layer_outputs))
 		#print("input layer out  in sgdCreateNetworkAndTrain: " , self.input_layer_outputs)
 		self.hidlay = HiddenLayer(HIDDEN_LAYER, self.input_layer_outputs)
 		#print("hidden layer out  in sgdCreateNetworkAndTrain: " , self.hidlay)

@@ -29,6 +29,12 @@ class HiddenLayer:
 	def getOutput(self):
 		return self.outputValues
 
+	def getWeights(self):
+		li = []
+		for n in self.neurons:
+			li.extend(n.getWeights())
+		return np.asarray(li)
+
 
 	def setNewInput(self, newInput):
 		#print("len of newInput in hiddenLayer",len(newInput))
