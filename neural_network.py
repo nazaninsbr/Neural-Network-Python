@@ -71,7 +71,10 @@ class NeuralNetwork:
 
 
 	def calcOutput(self, x):
+		#print("Here")
+		#print(x)
 		x = int(x)
+		#print("x -> ",x)
 		self.output = {0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:'G', 7:'H', 8:'I', 9:'J'}[x]
 		return self.output
 
@@ -86,6 +89,10 @@ class NeuralNetwork:
 
 	def getOutput(self):
 		return self.output
+
+	# def getOutForInput(self , x):
+	# 	if self.input_layer_outputs[x] == 'A':
+	# 		return 
 
 
 	def sgdTrain(self):
@@ -123,19 +130,28 @@ class NeuralNetwork:
 				l2_error = self.sgdCalcError(self.nn_inputs[imageInd][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 				#print("output layer output -> "  , self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 				l2_delta = l2_error*sigmoidDeriv(ord(self.calcOutput(self.calcMaxIndex(self.output_layer_output))))
+				#print("max index out layer: "  , self.calcMaxIndex(self.output_layer_output))
+				#print("sgdtrain out layer: " , self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 				#TODO: Test
 				syn2 = self.outlay.getWeights()
 				syn1 = self.hidlay.getWeights()
 				syn0 = self.inlay.getWeights()
+				#print(syn0)
 				# print("syn1.T is: " , syn1.T)
-
+				l2 = ord(self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 				l1 = ord(self.calcOutput(self.calcMaxIndex(self.hidden_layer_outputs)))
-				l0 = ord(self.calcOutput(self.calcMaxIndex(self.input_layer_outputs)))
+				#l0 = ord(self.calcOutput(self.calcMaxIndex(self.input_layer_outputs)))
+				#print("sgdtrain hidden layer" , self.calcOutput(self.calcMaxIndex(self.hidden_layer_outputs)))
+				#print("max index input layer: " , self.calcMaxIndex(self.input_layer_outputs))
+				#m = self.calcMaxIndex(self.input_layer_outputs)
+				#print("sgdtrain input layer"  , self.input_layer_outputs[self.calcMaxIndex(self.input_layer_outputs)])
+				#print("calc output input layer: " , self.calcOutput(m))
 				l1_error = np.asarray(l2_delta).dot(syn2.T)
 				l1_delta = l1_error*sigmoidDeriv(l1)
 				# print(l1.T)
-				syn2 += l1.T.dot(np.asarray(l2_delta))
-				syn0 += l0.T.dot(np.asarray(l1_delta))
+				syn2 += np.asarray(l1).T.dot(np.asarray(l2_delta))
+				#print("syn2: "  , syn2)
+				#syn1 += l0.T.dot(np.asarray(l1_delta))
 
 				# print(syn1)
 				# print(syn2)

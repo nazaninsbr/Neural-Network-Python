@@ -27,6 +27,12 @@ class Neuron:
 		self.calc_activation()
 		return self.output
 
+	def updateWeights(self, updatedWeights):
+		#TODO: delete one elements 
+		self.weights = self.weights[-1]
+		self.weights = np.delete(self.weights , 0)
+		self.weights = updatedWeights
+
 	def setNewInput(self, newInput):
 		cnt = 0
 		#print ("newInput in Neuron: " ,newInput)
