@@ -42,18 +42,22 @@ class InputLayer:
 	def getOutput(self):
 		return self.outputValues
 
-	def setWeightsUpdated(self , updatedWeights):
-		#TODO: testing...
-		x = len(self.getWeights())
-		updatedWeightsTemp = updatedWeights[:x]
-		# if updatedWeights is numpy delete is false
-		del updatedWeights[:x]
-		for n in self.neurons:
-			n.updatedWeights(updatedWeightsTemp)
+	#
+	# set weight updated
+	#
+	# def setWeightsUpdated(self , updatedWeights):
+	# 	#TODO: testing...
+	# 	x = len(self.getWeights())
+	# 	updatedWeightsTemp = updatedWeights[:x]
+	# 	# if updatedWeights is numpy delete is false
+	# 	updatedWeights = np.array([:x])
+	# 	for n in self.neurons:
+	# 		n.updatedWeights(updatedWeightsTemp)
+	#
+	#
+	#
 
-
-
-	def getWeights(self ):
+	def getWeights(self):
 		li = []
 		for n in self.neurons:
 			li.extend(n.getWeights())

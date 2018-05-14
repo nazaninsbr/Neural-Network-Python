@@ -27,30 +27,18 @@ class Neuron:
 		self.calc_activation()
 		return self.output
 
-	def updateWeights(self, updatedWeights):
-		#TODO: delete one elements 
-		self.weights = self.weights[-1]
-		self.weights = np.delete(self.weights , 0)
-		self.weights = updatedWeights
+	# def updateWeights(self, updatedWeights):
+	# 	#TODO: delete one elements 
+	# 	self.weights = self.weights[-1]
+	# 	self.weights = np.delete(self.weights , 0)
+	# 	np.place(self.weights , updatedWeights ,  )
 
 	def setNewInput(self, newInput):
 		cnt = 0
 		#print ("newInput in Neuron: " ,newInput)
-
-		# 		
-		# 
-		# TODO:delete elemet
-		# 
-		# 
-		# 		
-		# self.pixel_values = self.pixel_values[-1]
-		# self.pixel_values = np.delete(self.pixel_values , 0)
-		#print(self.pixel_values)
-
+		self.pixel_values = np.array([])
+		print("pixel"  , self.pixel_values)
 		#print(type(newInput))
-		#for i in range (0,newInput.length):
-			#cnt +=1
-		#print(cnt)
 		self.pixel_values = np.asarray(newInput)
 		#print(len(newInput))
 		#print(self.pixel_values.size)
