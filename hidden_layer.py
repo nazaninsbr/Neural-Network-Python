@@ -26,8 +26,29 @@ class HiddenLayer:
 		for n in self.neurons:
 			self.outputValues.append(n.calc_output())
 
+	#
+	# set Weight Updated
+	#
+	# def setWeightsUpdated(self , updatedWeights):
+	# 	#TODO: testing...
+	# 	x = len(self.getWeights())
+	# 	updatedWeightsTemp = updatedWeights[:x]
+	# 	# if updatedWeights is numpy delete is false
+	# 	del updatedWeights[:x]
+	# 	for n in self.neurons:
+	# 		n.updatedWeights(updatedWeightsTemp)
+	#
+	#
+	#
+
 	def getOutput(self):
 		return self.outputValues
+
+	def getWeights(self):
+		li = []
+		for n in self.neurons:
+			li.extend(n.getWeights())
+		return np.asarray(li)
 
 
 	def setNewInput(self, newInput):
