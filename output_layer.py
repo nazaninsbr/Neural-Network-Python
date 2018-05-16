@@ -29,10 +29,10 @@ class OutputLayer:
 	#
 	def setWeightsUpdated(self , updatedWeights):
 		#TODO: testing...
-		x = len(self.neurons[0].getNumOfWeights())
+		x = self.neurons[0].getNumOfWeights()
 		for i in range(0 , len(self.neurons)):
 			updatedWeightsTemp = updatedWeights[i*x:(i+1)*x]
-			self.neurons[i].updatedWeights(updatedWeightsTemp)
+			self.neurons[i].updateWeights(updatedWeightsTemp)
 	#
 	#
 	#

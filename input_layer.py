@@ -21,7 +21,7 @@ class InputLayer:
 		for i in range(self.number_of_pixels):
 			for j in range(self.number_of_pixels):
 				inputs = [x[i][j] for x in self.input_values]
-				w = [random.uniform(0, 1) for x in inputs]
+				w = [1 for x in inputs]
 				newNeuron = Neuron(inputs, w)
 				self.neurons.append(newNeuron)
 
@@ -47,10 +47,10 @@ class InputLayer:
 	#
 	def setWeightsUpdated(self , updatedWeights):
 		#TODO: testing...
-		x = len(self.neurons[0].getNumOfWeights())
+		x = self.neurons[0].getNumOfWeights()
 		for i in range(0 , len(self.neurons)):
 			updatedWeightsTemp = updatedWeights[i*x:(i+1)*x]
-			self.neurons[i].updatedWeights(updatedWeightsTemp)
+			self.neurons[i].updateWeights(updatedWeightsTemp)
 	
 	#
 	#

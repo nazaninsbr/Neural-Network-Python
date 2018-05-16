@@ -28,28 +28,13 @@ class Neuron:
 		return self.output
 
 	def updateWeights(self, updatedWeights):
-		self.weights = np.array([])
+		#self.weights = np.array([])
 		np.copyto(self.weights , updatedWeights)
-		print("weightsupdated" , self.weights)
+		#print("weightsupdated" , len(self.weights))
 
 	def setNewInput(self, newInput):
 		cnt = 0
 		#print ("newInput in Neuron: " ,newInput)
-
-		# 		
-		# 
-		# TODO:delete elemet
-		# 
-		# 
-		# 		
-		# self.pixel_values = self.pixel_values[-1]
-		# self.pixel_values = np.delete(self.pixel_values , 0)
-		#print(self.pixel_values)
-
-		#print(type(newInput))
-		#for i in range (0,newInput.length):
-			#cnt +=1
-		#print(cnt)
 		self.pixel_values = np.array([])
 		#print("pixel"  , self.pixel_values)
 		self.pixel_values = np.asarray(newInput)
