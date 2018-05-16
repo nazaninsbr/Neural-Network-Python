@@ -28,7 +28,6 @@ class Neuron:
 		return self.output
 
 	def updateWeights(self, updatedWeights):
-		#TODO: delete one elements 
 		self.weights = np.array([])
 		np.copyto(self.weights , updatedWeights)
 		print("weightsupdated" , self.weights)
