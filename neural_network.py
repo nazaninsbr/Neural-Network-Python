@@ -4,6 +4,7 @@ from output_layer import *
 import math
 from activationFunctions import *
 import random 
+import plot
 
 HIDDEN_LAYER = 2*int(math.sqrt(28*28))
 ROUND = 4
@@ -118,6 +119,10 @@ class NeuralNetwork:
 			elif self.choice=='2':
 				self.sgdTrain()
 
+		else:
+			plot.mainFunc(self.hidlay.getWeights(), self.outlay.getWeights())
+
+
 
 
 
@@ -188,9 +193,13 @@ class NeuralNetwork:
 		l1_delta = l1_error*sigmoidDeriv(l1)
 
 		syn2 += np.asarray(l1).T.dot(np.asarray(l2_delta))
+<<<<<<< HEAD
 		print("len syn2: "  , syn2.size)
 		# print ("size l1-delta: " , len(l1_delta))
 		# syn1 += np.asarray(l0).T.dot(np.asarray(l1_delta))
+=======
+		syn1 += l0.T.dot(np.asarray(l1_delta))
+>>>>>>> cce863fbf432d5c05ad85147555395f00eb1812a
 
 		self.hidlay.setWeightsUpdated(syn1)
 		self.outlay.setWeightsUpdated(syn2)
@@ -217,6 +226,7 @@ class NeuralNetwork:
 		self.outlay = OutputLayer(10, self.hidden_layer_outputs)
 		self.output_layer_output = self.outlay.getOutput()
 		self.sgdTrain()
+
 
 		
 

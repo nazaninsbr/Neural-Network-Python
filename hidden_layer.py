@@ -35,9 +35,9 @@ class HiddenLayer:
 		for i in range(0 , len(self.neurons)):
 			updatedWeightsTemp = updatedWeights[i*x:(i+1)*x]
 			self.neurons[i].updateWeights(updatedWeightsTemp)
-	#
-	#
-	#
+	
+	def dropOut(self , delta):
+		self.neurons[delta].
 
 	def getOutput(self):
 		return self.outputValues
