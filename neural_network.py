@@ -133,6 +133,7 @@ class NeuralNetwork:
 	def sgdTrain(self):
 		print("In training")
 		turn  = 0
+		dropOutList = []
 		while(turn<ROUND):
 			coef = 0
 			turn +=1 
@@ -145,25 +146,30 @@ class NeuralNetwork:
 			imageInd = remainder
 			while(imageInd < len(self.nn_inputs)):
 				if random.randint(0, 100) == 1:
+					print("dropping out!")
 					delta = random.randint(0, HIDDEN_LAYER)
+					dropOutList.append(delta)
 					self.hidlay.dropOut(delta)
+
 				self.input_layer_outputs = self.inlay.setNewInput(self.nn_inputs[imageInd][1])
 				self.hidden_layer_outputs = self.hidlay.setNewInput(self.input_layer_outputs)
 				self.output_layer_output = self.outlay.setNewInput(self.hidden_layer_outputs)
 
 				# print("Expected : {}".format(self.nn_inputs[imageInd][0]))
 				# print("Got : "+self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-
-				l2_error = self.sgdCalcError(self.nn_inputs[imageInd][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
+				for i in range(0 , len(self.output_layer_output)):
+					l2_error = self.sgdCalcError(self.nn_inputs[imageInd][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output[i])))
 				if not l2_error==0:
 					self.updateWeights(l2_error)
 				
 				coef +=1
 				imageInd = 3*coef + remainder
+				for i in dropOutList:
+					self.hidlay.resetDropOut(i)
+				del dropOutList[:]
+
 		print("Finish training!")
 		self.runTests()
-
-
 
 
 
@@ -192,14 +198,13 @@ class NeuralNetwork:
 		l1_error = np.asarray(l2_delta).dot(syn2.T)
 		l1_delta = l1_error*sigmoidDeriv(l1)
 
-		syn2 += np.asarray(l1).T.dot(np.asarray(l2_delta))
-<<<<<<< HEAD
-		print("len syn2: "  , syn2.size)
+		# syn2 += np.asarray(l1).T.dot(np.asarray(l2_delta))
+
+		# print("len syn2: "  , syn2.size)
 		# print ("size l1-delta: " , len(l1_delta))
 		# syn1 += np.asarray(l0).T.dot(np.asarray(l1_delta))
-=======
-		syn1 += l0.T.dot(np.asarray(l1_delta))
->>>>>>> cce863fbf432d5c05ad85147555395f00eb1812a
+		# syn1 += l0.T.dot(np.asarray(l1_delta))
+
 
 		self.hidlay.setWeightsUpdated(syn1)
 		self.outlay.setWeightsUpdated(syn2)
@@ -213,9 +218,9 @@ class NeuralNetwork:
 
 
 	def sgdCalcError(self, expected, value):
-		expected = ord(expected)
-		value = ord(value)
-		return abs(expected - value)
+			expected = ord(expected)
+			value = ord(value)
+			return expected - value
 
 	def sgdCreateNetworkAndTrain(self):
 		inlay_inputs = self.nn_inputs[0][1]

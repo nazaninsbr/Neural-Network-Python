@@ -37,7 +37,7 @@ class HiddenLayer:
 			self.neurons[i].updateWeights(updatedWeightsTemp)
 	
 	def dropOut(self , delta):
-		self.neurons[delta].
+		self.neurons[delta].setDropOut()
 
 	def getOutput(self):
 		return self.outputValues
@@ -48,6 +48,8 @@ class HiddenLayer:
 			li.extend(n.getWeights())
 		return np.asarray(li)
 
+	def resetDropOut(self, delta):
+		self.neurons[delta].resetDropOut()
 
 	def setNewInput(self, newInput):
 		#print("len of newInput in hiddenLayer",len(newInput))
