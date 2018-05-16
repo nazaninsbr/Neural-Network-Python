@@ -21,7 +21,7 @@ class InputLayer:
 		for i in range(self.number_of_pixels):
 			for j in range(self.number_of_pixels):
 				inputs = [x[i][j] for x in self.input_values]
-				w = [random.uniform(0, 1) for x in inputs]
+				w = [1 for x in inputs]
 				newNeuron = Neuron(inputs, w)
 				self.neurons.append(newNeuron)
 
