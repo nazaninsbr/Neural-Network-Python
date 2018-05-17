@@ -10,7 +10,11 @@ def linearAxB(inputValue):
 	return LINEAR_A*inputValue + LINEAR_B
 
 def sigmoid(inputValue):
-	return 1/(1+ math.exp(-1*inputValue))
+	try:
+		ans = 1/(1+ math.exp(-1*inputValue))
+	except OverflowError:
+		ans = 1/math.exp(-1*(inputValue%10))
+	return ans
 
 def stepFunction(inputValue):
 	if inputValue < 0:

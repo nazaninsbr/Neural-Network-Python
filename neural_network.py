@@ -8,7 +8,14 @@ import plot
 
 HIDDEN_LAYER = 2*int(math.sqrt(28*28))
 ROUND = 4
+N = 0.5
+M = 0.2
 
+def makeMatrix(I, J, fill=0.0):
+	m = []
+	for i in range(I):
+		m.append([fill]*J)
+	return m
 
 class NeuralNetwork:
 	def __init__(self, input_values):
@@ -23,6 +30,8 @@ class NeuralNetwork:
 		self.input_layer_outputs = []
 		self.test = []
 		self.choice = 0
+		self.ch = makeMatrix(HIDDEN_LAYER, 28*28)
+		self.co = makeMatrix(10, HIDDEN_LAYER)
 		self.work()
 
 	def work(self):
@@ -37,7 +46,7 @@ class NeuralNetwork:
 
 	def separateTestData(self):
 		for i in range(2000):
-			ind = random.randint(0, len(self.nn_inputs))
+			ind = random.randint(0, len(self.nn_inputs))%len(self.nn_inputs)
 			self.test.append(self.nn_inputs[ind])
 			del self.nn_inputs[ind]
 
@@ -84,7 +93,8 @@ class NeuralNetwork:
 
 
 	def trainNetworkGD(self):
-
+		print("Training....")
+		output_deltas = [0.0] * len(self.output_layer_output)
 		totalError = 0
 
 		for img in self.nn_inputs:
@@ -92,12 +102,27 @@ class NeuralNetwork:
 			self.hidden_layer_outputs = self.hidlay.setNewInput(self.input_layer_outputs)
 			self.output_layer_output = self.outlay.setNewInput(self.hidden_layer_outputs)
 
+			expectedOutput = img[0]
+			outputToIndex = {'A':0, 'B':1, 'C':2, 'D':3, 'E':4, 'F':5, 'G':6, 'H':7, 'I':8, 'J':9}[expectedOutput]
+				
+			for k in range(len(self.output_layer_output)):
+				if not k ==outputToIndex:
+					error = self.sgdCalcError('0', self.calcOutput(k))*self.output_layer_output[k]
+				elif k ==outputToIndex:
+					error = self.sgdCalcError(expectedOutput, self.calcOutput(k))*self.output_layer_output[k]
+				output_deltas[k] += sigmoidDeriv(self.output_layer_output[k]) * error
+
+
 			totalError += self.sgdCalcError(img[0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 
-		self.updateWeights(totalError)
+		print("Error: {}".format(totalError))
+		print(output_deltas)
+		self.updateWeights(output_deltas)
+		self.runTests()
 
 
 	def runTests(self):
+		print("Running Tests: ")
 		wrongAnswers = 0
 
 		for img in self.test:
@@ -147,7 +172,7 @@ class NeuralNetwork:
 			while(imageInd < len(self.nn_inputs)):
 				if random.randint(0, 100) == 1:
 					print("dropping out!")
-					delta = random.randint(0, HIDDEN_LAYER)
+					delta = random.randint(0, HIDDEN_LAYER)%HIDDEN_LAYER
 					dropOutList.append(delta)
 					self.hidlay.dropOut(delta)
 
@@ -157,10 +182,33 @@ class NeuralNetwork:
 
 				# print("Expected : {}".format(self.nn_inputs[imageInd][0]))
 				# print("Got : "+self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-				for i in range(0 , len(self.output_layer_output)):
-					l2_error = self.sgdCalcError(self.nn_inputs[imageInd][0], self.calcOutput(self.calcMaxIndex(self.output_layer_output[i])))
-				if not l2_error==0:
-					self.updateWeights(l2_error)
+				# print(self.output_layer_output)
+				ThisTimesError = 0.0
+				expectedOutput = self.nn_inputs[imageInd][0]
+				outputToIndex = {'A':0, 'B':1, 'C':2, 'D':3, 'E':4, 'F':5, 'G':6, 'H':7, 'I':8, 'J':9}
+				output_deltas = [0.0] * len(self.output_layer_output)
+				# print("output_layer_output: ", len(self.output_layer_output))
+				# print("output_deltas: ", len(output_deltas))
+				
+				for k in range(len(self.output_layer_output)):
+					if k > 9 :
+						break
+					if not k ==outputToIndex:
+						error = self.sgdCalcError('0', self.calcOutput(k))*self.output_layer_output[k]
+						ThisTimesError += 0.5*(error)**2
+					elif k ==outputToIndex:
+						error = self.sgdCalcError(expectedOutput, self.calcOutput(k))*self.output_layer_output[k]
+					output_deltas[k] = sigmoidDeriv(self.output_layer_output[k]) * error
+					if error>0 and output_deltas[k]==0:
+						output_deltas[k] += 0.4
+					# print("Error: ", error)
+
+				
+				# print(output_deltas)
+
+				# print("Error: {}".format(ThisTimesError))
+
+				self.updateWeights(output_deltas)
 				
 				coef +=1
 				imageInd = 3*coef + remainder
@@ -173,54 +221,62 @@ class NeuralNetwork:
 
 
 
-	def updateWeights(self, l2_error):
+	def updateWeights(self, output_deltas):
 
-		#print("output layer output -> "  , self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-		l2 = ord(self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-		l2_delta = l2_error*sigmoidDeriv(l2)
-		#print("max index out layer: "  , self.calcMaxIndex(self.output_layer_output))
-		#print("sgdtrain out layer: " , self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
-		#TODO: Test
-		syn2 = self.outlay.getWeights()
-		syn1 = self.hidlay.getWeights()
-		#print(syn0)
-		# print("syn1.T is: " , syn1.T)
-		
-		l1 = ord(self.calcOutput(self.calcMaxIndex(self.hidden_layer_outputs)))
-		l0 = self.input_layer_outputs[self.calcMaxIndex(self.input_layer_outputs)]
+		# calculate error terms for hidden
+		hidden_deltas = [0.0] * HIDDEN_LAYER
+		wo = self.outlay.getWeights()
+		wh = self.hidlay.getWeights()
+		# print("weights before change: ", wo[0])
+		# print("wo : ", len(wo))
+		# print("wh : ", len(wh))
+		# print("output_deltas: ", len(output_deltas))
+		for j in range(HIDDEN_LAYER):
+			error = 0.0
+			for k in range(len(self.output_layer_output)):
+				# print("index of output_layer_output: ", k)
+				# print("index of hidden_layer_outputs: ", j)
+				error = error + output_deltas[k]*wo[k][j]
+			hidden_deltas[j] = sigmoidDeriv(self.hidden_layer_outputs[j]) * error
+			# print("Error: ", error)
+			# print("hidden_deltas[j]: ", hidden_deltas[j])
 
-		#print("sgdtrain hidden layer" , self.calcOutput(self.calcMaxIndex(self.hidden_layer_outputs)))
-		#print("max index input layer: " , self.calcMaxIndex(self.input_layer_outputs))
-		#m = self.calcMaxIndex(self.input_layer_outputs)
-		#print("sgdtrain input layer"  , self.input_layer_outputs[self.calcMaxIndex(self.input_layer_outputs)])
-		#print("calc output input layer: " , self.calcOutput(m))
+		# update output weights
+		for j in range(len(self.output_layer_output)):
+			for k in range(len(self.hidden_layer_outputs)):
+				# print("index of output_layer_output: ", j)
+				# print("index of hidden_layer_outputs: ", k)
+				# print("calculating change, output_deltas: ", output_deltas[j])
+				# print("calculating change, hidden_layer_outputs: ",self.hidden_layer_outputs[k])
+				change = output_deltas[j]*self.hidden_layer_outputs[k]
+				# print("j , k before change: ", wo[j][k])
+				# wo[j][k] = wo[j][k] + N*change
+				# print("change val: ", N*change)
+				# print("j , k after change: ", wo[j][k])
+				wo[j][k] = wo[j][k] + N*change + M*self.co[j][k]
+				self.co[j][k] = change
+				#print N*change, M*self.co[j][k]
 
-		l1_error = np.asarray(l2_delta).dot(syn2.T)
-		l1_delta = l1_error*sigmoidDeriv(l1)
+		# update hidden weights
+		for i in range(HIDDEN_LAYER):
+			for j in range(len(self.input_layer_outputs)):
+				change = hidden_deltas[i]*self.input_layer_outputs[j]
+				# wh[i][j] = wh[i][j] + N*change
+				wh[i][j] = wh[i][j] + N*change + M*self.ch[i][j]
+				self.ch[i][j] = change
 
-		# syn2 += np.asarray(l1).T.dot(np.asarray(l2_delta))
+		# print("weights after change: ", wo[0])
 
-		# print("len syn2: "  , syn2.size)
-		# print ("size l1-delta: " , len(l1_delta))
-		# syn1 += np.asarray(l0).T.dot(np.asarray(l1_delta))
-		# syn1 += l0.T.dot(np.asarray(l1_delta))
-
-
-		self.hidlay.setWeightsUpdated(syn1)
-		self.outlay.setWeightsUpdated(syn2)
-		# print(syn1)
-		# print(syn2)
-		# print(l2_error)
-		# print(l2_delta)
-		# print(l1_error)
-		# print(l1_delta)
+		self.outlay.setWeightsUpdated(wo)
+		self.hidlay.setWeightsUpdated(wh)
 
 
 
 	def sgdCalcError(self, expected, value):
-			expected = ord(expected)
-			value = ord(value)
-			return expected - value
+		# if not type(expected)==int:
+		expected = ord(expected)
+		value = ord(value)
+		return expected - value
 
 	def sgdCreateNetworkAndTrain(self):
 		inlay_inputs = self.nn_inputs[0][1]

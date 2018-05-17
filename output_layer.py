@@ -15,27 +15,23 @@ class OutputLayer:
 		self.calcOutputs()
 
 	def createNeurons(self):
+		# print("num of out lay neurons: ", self.number_of_neurons)
 		for i in range(self.number_of_neurons):
-			w = [random.uniform(0, 1) for x in self.input_values]
+			w = [random.uniform(-2, 2) for x in self.input_values]
 			newNeuron = Neuron(self.input_values, w)
 			self.neurons.append(newNeuron)
 
 	def calcOutputs(self):
+		del self.outputValues[:]
 		for n in self.neurons:
 			self.outputValues.append(n.calc_output())
 
-	#
-	# set Weight updated
-	#
+
 	def setWeightsUpdated(self , updatedWeights):
-		#TODO: testing...
-		x = self.neurons[0].getNumOfWeights()
+		
 		for i in range(0 , len(self.neurons)):
-			updatedWeightsTemp = updatedWeights[i*x:(i+1)*x]
+			updatedWeightsTemp = updatedWeights[i]
 			self.neurons[i].updateWeights(updatedWeightsTemp)
-	#
-	#
-	#
 
 	def getOutput(self):
 		return self.outputValues
@@ -50,5 +46,5 @@ class OutputLayer:
 	def getWeights(self):
 		li = []
 		for n in self.neurons:
-			li.extend(n.getWeights())
-		return np.asarray(li)
+			li.append(n.getWeights())
+		return li

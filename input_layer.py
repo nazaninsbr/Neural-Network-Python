@@ -42,24 +42,21 @@ class InputLayer:
 	def getOutput(self):
 		return self.outputValues
 
-	#
-	# set weight updated
-	#
-	def setWeightsUpdated(self , updatedWeights):
-		#TODO: testing...
-		x = self.neurons[0].getNumOfWeights()
-		for i in range(0 , len(self.neurons)):
-			updatedWeightsTemp = updatedWeights[i*x:(i+1)*x]
-			self.neurons[i].updateWeights(updatedWeightsTemp)
+	# #
+	# # set weight updated
+	# #
+	# def setWeightsUpdated(self , updatedWeights):
+	# 	#TODO: testing...
+	# 	x = self.neurons[0].getNumOfWeights()
+	# 	for i in range(0 , len(self.neurons)):
+	# 		updatedWeightsTemp = updatedWeights[i*x:(i+1)*x]
+	# 		self.neurons[i].updateWeights(updatedWeightsTemp)
 	
-	#
-	#
-
-	def getWeights(self):
-		li = []
-		for n in self.neurons:
-			li.extend(n.getWeights())
-		return np.asarray(li)
+	# def getWeights(self):
+	# 	li = []
+	# 	for n in self.neurons:
+	# 		li.extend(n.getWeights())
+	# 	return np.asarray(li)
 
 	def setNewInput(self, newInput):
 		#print ("newInput in input layer: " , newInput)
