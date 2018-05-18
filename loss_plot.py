@@ -1,46 +1,18 @@
-import time, random
-import math
-from collections import deque
-
-start = time.time()
-
-class RealtimePlot:
-    def __init__(self, axes, max_entries = 100):
-        self.axis_x = deque(maxlen=max_entries)
-        self.axis_y = deque(maxlen=max_entries)
-        self.axes = axes
-        self.max_entries = max_entries
-        
-        self.lineplot, = axes.plot([], [], "ro-")
-        self.axes.set_autoscaley_on(True)
-
-    def add(self, x, y):
-        self.axis_x.append(x)
-        self.axis_y.append(y)
-        self.lineplot.set_data(self.axis_x, self.axis_y)
-        self.axes.set_xlim(self.axis_x[0], self.axis_x[-1] + 1e-15)
-        self.axes.relim(); self.axes.autoscale_view() # rescale the y-axis
-
-    def animate(self, figure, callback, interval = 50):
-        import matplotlib.animation as animation
-        def wrapper(frame_index):
-            self.add(*callback(frame_index))
-            self.axes.relim(); self.axes.autoscale_view() # rescale the y-axis
-            return self.lineplot
-        animation.FuncAnimation(figure, wrapper, interval=interval)
+import numpy as np
+from matplotlib import pyplot as plt
 
 def main():
-    from matplotlib import pyplot as plt
-
-    fig, axes = plt.subplots()
-    display = RealtimePlot(axes)
-    display.animate(fig, lambda frame_index: (time.time() - start, random.random() * 100))
+    plt.axis([-50,50,0,10000])
+    plt.ion()
     plt.show()
 
-    fig, axes = plt.subplots()
-    display = RealtimePlot(axes)
-    while True:
-        display.add(time.time() - start, random.random() * 100)
+    x = np.arange(-50, 51)
+    for pow in range(1,5):   # plot x^1, x^2, ..., x^4
+        y = [Xi**pow for Xi in x]
+        plt.plot(x, y)
+        plt.draw()
         plt.pause(0.001)
+        input("Press [enter] to continue.")
 
-if __name__ == "__main__": main()
+if __name__ == '__main__':
+    main()

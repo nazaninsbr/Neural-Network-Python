@@ -5,6 +5,10 @@ import math
 from activationFunctions import *
 import random 
 import plot
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time
 
 HIDDEN_LAYER = 2*int(math.sqrt(28*28))
 ROUND = 4
@@ -32,10 +36,12 @@ class NeuralNetwork:
 		self.choice = 0
 		self.ch = makeMatrix(HIDDEN_LAYER, 28*28)
 		self.co = makeMatrix(10, HIDDEN_LAYER)
+		self.ax = 0
 		self.work()
 
 	def work(self):
 		self.separateTestData()
+		self.createPlot()
 		self.choice = input("User GD or SGD? (1/2)");
 		print("I am your choice: "  , self.choice)
 		if self.choice=='1':
@@ -43,6 +49,13 @@ class NeuralNetwork:
 			self.trainNetworkGD()
 		elif self.choice=='2':
 			self.sgdCreateNetworkAndTrain()
+
+
+	def createPlot(self):
+		# plt.axis([-5000,500000,0,10000000])
+		plt.ion()
+		plt.show()
+
 
 	def separateTestData(self):
 		for i in range(2000):
@@ -59,7 +72,7 @@ class NeuralNetwork:
 		self.hidden_layer_outputs = self.hidlay.getOutput()
 		self.outlay = OutputLayer(10, self.hidden_layer_outputs)
 		self.output_layer_output = self.outlay.getOutput()
-		self.trainNetworkGD()
+		self.trainNetworkGD(1)
 
 	# def calcExpected(self):
 	# 	print("Calculation Expected Outputs")
@@ -92,12 +105,18 @@ class NeuralNetwork:
 		return self.output
 
 
-	def trainNetworkGD(self):
+	def trainNetworkGD(self, runNum = 1):
 		print("Training....")
 		output_deltas = [0.0] * len(self.output_layer_output)
 		totalError = 0
-
+		dropOutList = []
 		for img in self.nn_inputs:
+			if random.randint(0, 100) == 1:
+				# print("dropping out!")
+				delta = random.randint(0, HIDDEN_LAYER)%HIDDEN_LAYER
+				dropOutList.append(delta)
+				self.hidlay.dropOut(delta)
+
 			self.input_layer_outputs = self.inlay.setNewInput(img[1])
 			self.hidden_layer_outputs = self.hidlay.setNewInput(self.input_layer_outputs)
 			self.output_layer_output = self.outlay.setNewInput(self.hidden_layer_outputs)
@@ -112,16 +131,23 @@ class NeuralNetwork:
 					error = self.sgdCalcError(expectedOutput, self.calcOutput(k))*self.output_layer_output[k]
 				output_deltas[k] += sigmoidDeriv(self.output_layer_output[k]) * error
 
+			for i in dropOutList:
+				self.hidlay.resetDropOut(i)
+			del dropOutList[:]
 
 			totalError += self.sgdCalcError(img[0], self.calcOutput(self.calcMaxIndex(self.output_layer_output)))
 
+		plt.scatter(runNum, totalError, s= 10, c='b')
+		runNum +=1
+		plt.draw()
+		plt.pause(0.001)
 		print("Error: {}".format(totalError))
 		print(output_deltas)
 		self.updateWeights(output_deltas)
-		self.runTests()
+		self.runTests(runNum)
 
 
-	def runTests(self):
+	def runTests(self, testNum):
 		print("Running Tests: ")
 		wrongAnswers = 0
 
@@ -136,13 +162,17 @@ class NeuralNetwork:
 
 
 		errorPercent = (wrongAnswers/len(self.test))*100
+		plt.scatter(testNum, errorPercent, s= 10, c='r')
+		testNum +=1
+		plt.draw()
+		plt.pause(0.001)
 		print("Error Percentage: {}".format(errorPercent))
 		if int(errorPercent) > 10:
 			print ("in the if:D")
 			if self.choice=='1':
-				self.trainNetworkGD()
+				self.trainNetworkGD(testNum+1)
 			elif self.choice=='2':
-				self.sgdTrain()
+				self.sgdTrain(testNum*len(self.nn_inputs)+1)
 
 		else:
 			plot.mainFunc(self.hidlay.getWeights(), self.outlay.getWeights())
@@ -155,7 +185,7 @@ class NeuralNetwork:
 		return self.output
 
 
-	def sgdTrain(self):
+	def sgdTrain(self, runNum = 1):
 		print("In training")
 		turn  = 0
 		dropOutList = []
@@ -170,8 +200,9 @@ class NeuralNetwork:
 				remainder = 2
 			imageInd = remainder
 			while(imageInd < len(self.nn_inputs)):
+				
 				if random.randint(0, 100) == 1:
-					print("dropping out!")
+					# print("dropping out!")
 					delta = random.randint(0, HIDDEN_LAYER)%HIDDEN_LAYER
 					dropOutList.append(delta)
 					self.hidlay.dropOut(delta)
@@ -195,15 +226,19 @@ class NeuralNetwork:
 						break
 					if not k ==outputToIndex:
 						error = self.sgdCalcError('0', self.calcOutput(k))*self.output_layer_output[k]
-						ThisTimesError += 0.5*(error)**2
 					elif k ==outputToIndex:
 						error = self.sgdCalcError(expectedOutput, self.calcOutput(k))*self.output_layer_output[k]
 					output_deltas[k] = sigmoidDeriv(self.output_layer_output[k]) * error
+					ThisTimesError += 0.5*(error)**2
 					if error>0 and output_deltas[k]==0:
 						output_deltas[k] += 0.4
-					# print("Error: ", error)
-
 				
+				print("Error: ", ThisTimesError)
+				print(self.output_layer_output)
+				plt.scatter(runNum, ThisTimesError, s= 10, c='b')
+				plt.draw()
+				plt.pause(0.001)
+				runNum +=1 
 				# print(output_deltas)
 
 				# print("Error: {}".format(ThisTimesError))
@@ -217,7 +252,7 @@ class NeuralNetwork:
 				del dropOutList[:]
 
 		print("Finish training!")
-		self.runTests()
+		self.runTests(int(runNum/len(self.nn_inputs)))
 
 
 
@@ -286,7 +321,7 @@ class NeuralNetwork:
 		self.hidden_layer_outputs = self.hidlay.getOutput()
 		self.outlay = OutputLayer(10, self.hidden_layer_outputs)
 		self.output_layer_output = self.outlay.getOutput()
-		self.sgdTrain()
+		self.sgdTrain(1)
 
 
 		
