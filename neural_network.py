@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 USE_MOMENTUM = True
 # 1 sigmoid 2 tanh 3 linear
-ACTIVATION_FUNCTION_CHOICE = 2
+ACTIVATION_FUNCTION_CHOICE = 1
 
 def get_next_batch(dataset, result, last_input_index, batch_size):
 	start_index = (last_input_index+1)%len(dataset)

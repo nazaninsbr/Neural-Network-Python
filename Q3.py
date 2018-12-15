@@ -101,7 +101,7 @@ def run_the_linear_model(train_images, train_labels, test_images,test_labels):
 	r = 0.001
 	lr = 0.00001
 	batch_size = 60000
-	iteration_length = 500
+	iteration_length = 1000
 
 	out_w = np.random.uniform(-0.1,0.1,(in_layer_size, out_layer_size))
 	out_b = np.ones(out_layer_size)
